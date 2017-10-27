@@ -104,8 +104,10 @@ public class NavigationController implements INavigationController {
 
         currentPagerPos = position;
         if (currentPagerPos == 0) {
+            Timber.d("setPagerPosition, lastPageLeft = %s", lastPageLeft);
             setVisiblePage(lastPageLeft, PAGER_TAG);
         } else {
+            Timber.d("setPagerPosition, lastPageRight = %s", lastPageRight);
             setVisiblePage(lastPageRight, PAGER_TAG);
         }
     }
@@ -123,7 +125,7 @@ public class NavigationController implements INavigationController {
     @Override
     public void setLeftPage(Page leftPage, String sender) {
         lastPageLeft = leftPage;
-
+        Timber.d("setLeftPage %s", leftPage);
         if (isPhone) {
             if (currentPagerPos == FIRST_PAGE) {
                 setVisiblePage(leftPage, sender);
@@ -138,7 +140,7 @@ public class NavigationController implements INavigationController {
     @Override
     public void setRightPage(Page rightPage, String sender) {
         lastPageRight = rightPage;
-
+        Timber.d("setRightPage %s", rightPage);
         if (isPhone) {
             if (currentPagerPos == SECOND_PAGE) {
                 setVisiblePage(rightPage, sender);

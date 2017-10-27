@@ -662,7 +662,7 @@ class ConversationFragment extends BaseFragment[ConversationFragment.Container] 
       val newInLandscape = isInLandscape
       oldInLandscape match {
         case Some(landscape) if landscape != newInLandscape =>
-          val conversationListVisible = getControllerFactory.getNavigationController.getCurrentPage eq Page.CONVERSATION_LIST
+          val conversationListVisible = getControllerFactory.getNavigationController.getCurrentPage == Page.CONVERSATION_LIST
           if (newInLandscape && !conversationListVisible)
             CancellableFuture.delayed(getInt(R.integer.framework_animation_duration_short).millis){
               Option(getActivity).foreach(_.onBackPressed())

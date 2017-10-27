@@ -31,6 +31,7 @@ import com.waz.api.IConversation;
 import com.waz.api.UpdateListener;
 import com.waz.api.User;
 import com.waz.model.ConvId;
+import com.waz.model.ConversationData;
 import com.waz.model.UserId;
 import com.waz.zclient.OnBackPressedListener;
 import com.waz.zclient.R;
@@ -137,18 +138,18 @@ public class SecondPageFragment extends BaseFragment<SecondPageFragment.Containe
                     return;
                 }
 
-                convController.withCurrentConvType(new Callback<IConversation.Type>() {
+                convController.withConvLoaded(change.toConvId(), new Callback<ConversationData>() {
                     @Override
-                    public void callback(final IConversation.Type convType) {
-                        selectedConversationType = convType;
+                    public void callback(final ConversationData convData) {
+                        selectedConversationType = convData.convType();
 
                         Timber.i("Conversation: %s type: %s requester: %s",
                             change.toConvId(),
-                            convType,
+                            convData.convType(),
                             change.requester());
                         // either starting from beginning or switching fragment
-                        final boolean switchingToPendingConnectRequest = (convType == IConversation.Type.WAIT_FOR_CONNECTION);
-                        final boolean switchingToConnectRequestInbox = convType == IConversation.Type.INCOMING_CONNECTION;
+                        final boolean switchingToPendingConnectRequest = (convData.convType() == IConversation.Type.WAIT_FOR_CONNECTION);
+                        final boolean switchingToConnectRequestInbox = convData.convType() == IConversation.Type.INCOMING_CONNECTION;
                         // This must be posted because onCurrentConversationHasChanged()
                         // might still be running and iterating over the observers -
                         // while the posted call triggers things to register/unregister
@@ -295,6 +296,7 @@ public class SecondPageFragment extends BaseFragment<SecondPageFragment.Containe
 
     @Override
     public void dismissInboxFragment() {
+        Timber.d("dismissInboxFragment");
         getControllerFactory().getNavigationController().setVisiblePage(Page.CONVERSATION_LIST, TAG);
     }
 
