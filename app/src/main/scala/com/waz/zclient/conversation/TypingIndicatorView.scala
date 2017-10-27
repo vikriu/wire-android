@@ -34,6 +34,7 @@ class TypingIndicatorView(val context: Context, val attrs: AttributeSet, val def
   def this(context: Context) = this(context, null)
 
   val zms = inject[Signal[ZMessaging]]
+  lazy val convController = inject[ConversationController]
   inflate(R.layout.typing_indicator)
 
   val nameTextView = findById[TextView](R.id.ttv__typing_indicator_names)
@@ -43,15 +44,12 @@ class TypingIndicatorView(val context: Context, val attrs: AttributeSet, val def
   private var animationRunning: Boolean = false
   private val handler = new Handler
 
-  val typingUsers = for {
+  lazy val typingUsers = for {
     z <- zms
-    convIdOpt <- z.convsStats.selectedConversationId
-    userIds <- convIdOpt match {
-      case Some(convId) => z.typing.typingUsers(convId)
-      case None => Signal.const(IndexedSeq.empty[UserId])
-    }
-    names <- z.usersStorage.listSignal(userIds)
-  } yield names
+    convId <- convController.currentConvId
+    userIds <- z.typing.typingUsers(convId)
+    users <- z.usersStorage.listSignal(userIds.filterNot(_ == z.selfUserId))
+  } yield users
 
   typingUsers.onUi { users =>
     if (users.isEmpty) {
