@@ -18,6 +18,7 @@
 package com.waz.zclient.tracking
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.waz.TrackingHelper
 import com.waz.ZLog.ImplicitTag._
 import com.waz.ZLog._
 import com.waz.api.EphemeralExpiration
@@ -89,6 +90,11 @@ class GlobalTrackingController(implicit inj: Injector, cxt: WireContext, eventCo
       registeredZmsInstances += zms
       registerTrackingEventListeners(zms)
     case _ => //already registered to this zms, do nothing.
+  }
+
+  TrackingHelper.EventsStream.on(dispatcher) {
+    case com.waz.LoggedOutEvent(cause) => trackEvent(LoggedOutEvent(cause))
+    case _ =>
   }
 
   /**
